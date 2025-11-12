@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  body {
+    @apply bg-stone-50 text-stone-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-sage-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-sage-700 transition-colors duration-200 shadow-sm;
+  }
+  
+  .btn-secondary {
+    @apply bg-stone-200 text-stone-700 px-6 py-3 rounded-lg font-medium hover:bg-stone-300 transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-lg border border-stone-200 p-6;
+  }
+  
+  .game-canvas {
+    @apply border-2 border-stone-300 rounded-lg bg-gradient-to-b from-sky-100 to-stone-50;
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "bridgecraft",
+  "version": "1.0.0",
+  "description": "A minimalist physics-based bridge-building simulator",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "matter-js": "^0.19.0",
+    "pixi.js": "^7.3.2",
+    "howler": "^2.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@types/matter-js": "^0.19.5",
+    "@types/howler": "^2.2.11",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  }
+}
