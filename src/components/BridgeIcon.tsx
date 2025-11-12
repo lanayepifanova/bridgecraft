@@ -1,6 +1,4 @@
-import React from 'react'
-
-const BridgeIcon: React.FC = () => {
+const BridgeIcon = () => {
   return (
     <svg 
       width="32" 

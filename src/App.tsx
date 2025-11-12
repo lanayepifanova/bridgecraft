@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import GameCanvas from './components/GameCanvas'
 import GameUI from './components/GameUI'
 import TutorialOverlay from './components/TutorialOverlay'
@@ -77,7 +77,6 @@ function App() {
           <GameCanvas 
             gameState={gameState}
             levels={levels}
-            audioManager={audioManager}
           />
         </div>
         

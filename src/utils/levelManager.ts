@@ -1,4 +1,4 @@
-import { Level, Node, Vehicle, MaterialType } from '../types/game'
+import { Level } from '../types/game'
 
 export const initializeLevels = (): Level[] => {
   return [

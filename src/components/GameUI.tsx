@@ -1,4 +1,3 @@
-import React from 'react'
 import { GameState, Level, MaterialType } from '../types/game'
 import { MATERIALS } from '../utils/materials'
 
@@ -11,14 +10,14 @@ interface GameUIProps {
   onNextLevel: () => void
 }
 
-const GameUI: React.FC<GameUIProps> = ({
+const GameUI = ({
   gameState,
   levels,
   onTogglePause,
   onSelectMaterial,
   onToggleZenMode,
   onNextLevel
-}) => {
+}: GameUIProps) => {
   const currentLevel = levels[gameState.currentLevel]
   const progress = ((gameState.currentLevel + 1) / levels.length) * 100
 

@@ -1,4 +1,4 @@
-import { Howl, Howler } from 'howler'
+import { Howl } from 'howler'
 
 export default class AudioManager {
   private ambientSound: Howl | null = null

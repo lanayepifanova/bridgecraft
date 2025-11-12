@@ -1,24 +1,19 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useState, useCallback, type MouseEvent } from 'react'
 import { GameState, Level, Node, Beam, MaterialType } from '../types/game'
 import { PhysicsEngine } from '../utils/physics'
 import { MATERIALS, calculateBeamCost } from '../utils/materials'
-import AudioManager from '../utils/AudioManager'
 
 interface GameCanvasProps {
   gameState: GameState
   levels: Level[]
-  audioManager: AudioManager
 }
 
-const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, levels, audioManager }) => {
+const GameCanvas = ({ gameState, levels }: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const physicsEngineRef = useRef<PhysicsEngine | null>(null)
   const [nodes, setNodes] = useState<Node[]>([])
   const [beams, setBeams] = useState<Beam[]>([])
   const [selectedNode, setSelectedNode] = useState<string | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragStart, setDragStart] = useState<{ x: number, y: number } | null>(null)
-  const [vehicles, setVehicles] = useState<any[]>([])
   const [showStressMap, setShowStressMap] = useState(true)
 
   const currentLevel = levels[gameState.currentLevel]
@@ -34,7 +29,6 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, levels, audioManager
     
     physicsEngineRef.current.initialize(initialNodes)
     setBeams([])
-    setVehicles([])
   }, [currentLevel])
 
   useEffect(() => {
@@ -52,7 +46,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, levels, audioManager
     initializeLevel()
   }, [gameState.currentLevel, initializeLevel])
 
-  const getCanvasCoordinates = (e: React.MouseEvent): { x: number, y: number } => {
+  const getCanvasCoordinates = (e: MouseEvent<HTMLCanvasElement>): { x: number, y: number } => {
     const canvas = canvasRef.current
     if (!canvas) return { x: 0, y: 0 }
     
@@ -78,7 +72,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, levels, audioManager
     return nearestNode
   }
 
-  const handleCanvasClick = (e: React.MouseEvent) => {
+  const handleCanvasClick = (e: MouseEvent<HTMLCanvasElement>) => {
     if (gameState.isPlaying) return
 
     const { x, y } = getCanvasCoordinates(e)
@@ -134,8 +128,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, levels, audioManager
 
     // Add vehicles
     currentLevel.vehicles.forEach(vehicle => {
-      const vehicleBody = physicsEngineRef.current!.addVehicle(vehicle.x, vehicle.y, vehicle.weight)
-      setVehicles(prev => [...prev, vehicleBody])
+      physicsEngineRef.current!.addVehicle(vehicle.x, vehicle.y, vehicle.weight)
     })
 
     physicsEngineRef.current.startSimulation()

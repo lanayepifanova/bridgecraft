@@ -8,10 +8,8 @@ export class PhysicsEngine {
   private render: Matter.Render
   private nodes: Map<string, Matter.Body>
   private beams: Map<string, Matter.Constraint>
-  private canvas: HTMLCanvasElement
 
   constructor(canvas: HTMLCanvasElement) {
-    this.canvas = canvas
     this.engine = Matter.Engine.create()
     this.world = this.engine.world
     this.engine.world.gravity.y = 1
@@ -123,7 +121,7 @@ export class PhysicsEngine {
   }
 
   reset(): void {
-    Matter.World.clear(this.world)
+    Matter.World.clear(this.world, false)
     Matter.Engine.clear(this.engine)
     this.nodes.clear()
     this.beams.clear()
@@ -135,6 +133,7 @@ export class PhysicsEngine {
 
     const bodyA = constraint.bodyA
     const bodyB = constraint.bodyB
+    if (!bodyA || !bodyB) return 0
     
     // Calculate distance between nodes
     const dx = bodyB.position.x - bodyA.position.x

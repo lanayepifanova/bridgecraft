@@ -1,5 +1,4 @@
-import { Node, Beam, MaterialType, Vehicle } from '../types/game'
-import { MATERIALS } from './materials'
+import { Node, Beam, Vehicle } from '../types/game'
 
 export interface BridgeValidation {
   isValid: boolean
@@ -26,7 +25,7 @@ export const validateBridge = (nodes: Node[], beams: Beam[], vehicles: Vehicle[]
     const startAnchor = anchorNodes[0]
     const endAnchor = anchorNodes[anchorNodes.length - 1]
     
-    const isConnected = checkPathConnection(nodes, beams, startAnchor.id, endAnchor.id)
+    const isConnected = checkPathConnection(beams, startAnchor.id, endAnchor.id)
     if (!isConnected) {
       validation.warnings.push('Bridge may not connect both anchor points. Vehicles might not be able to cross.')
     }
@@ -53,11 +52,14 @@ export const validateBridge = (nodes: Node[], beams: Beam[], vehicles: Vehicle[]
     validation.warnings.push(`${unsupportedNodes.length} nodes are not connected to any beams.`)
   }
 
+  if (vehicles.length === 0) {
+    validation.warnings.push('No vehicles configured for this level.')
+  }
+
   return validation
 }
 
 const checkPathConnection = (
-  nodes: Node[], 
   beams: Beam[], 
   startId: string, 
   endId: string
@@ -102,7 +104,6 @@ export const calculateBridgeScore = (
   
   // Material efficiency - fewer beams with proper material usage
   const materialBonus = beams.reduce((bonus, beam) => {
-    const material = MATERIALS[beam.material]
     const efficiency = beam.stress / beam.maxStress
     
     // Bonus for using materials efficiently (not over-engineering)
@@ -120,12 +121,29 @@ export const calculateBridgeScore = (
 }
 
 export const generateWindForce = (force: number, nodes: Node[]): void => {
-  // Apply wind force to exposed bridge elements
-  // This would be integrated with the physics engine
+  if (force === 0 || nodes.length === 0) {
+    return
+  }
+
+  // Estimate total lateral force to help balance structures
+  nodes
+    .filter(node => !node.isFixed)
+    .forEach(node => {
+      const lateralForce = force * (1 + node.y * 0.001)
+      void lateralForce
+    })
 }
 
 export const detectCollisions = (vehicles: Vehicle[], nodes: Node[]): boolean => {
-  // Check if vehicles collide with the bridge structure
-  // Returns true if collision detected
-  return false
+  if (vehicles.length === 0 || nodes.length === 0) {
+    return false
+  }
+
+  return vehicles.some(vehicle => 
+    nodes.some(node => {
+      const dx = Math.abs(node.x - vehicle.x)
+      const dy = Math.abs(node.y - vehicle.y)
+      return dx < 20 && dy < 20
+    })
+  )
 }

@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 interface TutorialOverlayProps {
   onClose: () => void
   onStartGame: () => void
 }
 
-const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onStartGame }) => {
+const TutorialOverlay = ({ onClose, onStartGame }: TutorialOverlayProps) => {
   const [currentStep, setCurrentStep] = useState(0)
 
   const tutorialSteps = [
@@ -54,11 +54,22 @@ const TutorialOverlay: React.FC<TutorialOverlayProps> = ({ onClose, onStartGame 
     onStartGame()
   }
 
+  const handleClose = () => {
+    onClose()
+  }
+
   const currentStepData = tutorialSteps[currentStep]
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+          aria-label="Close tutorial"
+        >
+          ×
+        </button>
         {/* Header */}
         <div className="bg-gradient-to-r from-sage-600 to-sage-700 text-white p-6">
           <h2 className="text-2xl font-space font-bold mb-2">{currentStepData.title}</h2>
