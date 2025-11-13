@@ -2,14 +2,12 @@ import { useState, useEffect } from 'react'
 import GameCanvas from './components/GameCanvas'
 import GameUI from './components/GameUI'
 import TutorialOverlay from './components/TutorialOverlay'
-import AudioManager from './utils/AudioManager'
 import { GameState, Level, MaterialType } from './types/game'
 import { initializeLevels } from './utils/levelManager'
 
 function App() {
   const [gameState, setGameState] = useState<GameState>({
     currentLevel: 0,
-    isPlaying: false,
     isPaused: false,
     showTutorial: true,
     selectedMaterial: MaterialType.WOOD,
@@ -19,21 +17,21 @@ function App() {
   })
 
   const [levels, setLevels] = useState<Level[]>([])
-  const [audioManager] = useState(() => new AudioManager())
 
   useEffect(() => {
     const initialLevels = initializeLevels()
     setLevels(initialLevels)
-    audioManager.init()
     
-    return () => {
-      audioManager.cleanup()
+    if (initialLevels.length > 0) {
+      setGameState(prev => ({
+        ...prev,
+        budget: prev.zenMode ? prev.budget : initialLevels[0].budget
+      }))
     }
   }, [])
 
   const handleStartGame = () => {
-    setGameState(prev => ({ ...prev, isPlaying: true, showTutorial: false }))
-    audioManager.playAmbientSound()
+    setGameState(prev => ({ ...prev, showTutorial: false }))
   }
 
   const handleTogglePause = () => {
@@ -45,11 +43,16 @@ function App() {
   }
 
   const handleToggleZenMode = () => {
-    setGameState(prev => ({ 
-      ...prev, 
-      zenMode: !prev.zenMode,
-      budget: prev.zenMode ? 1000 : Infinity 
-    }))
+    setGameState(prev => {
+      const currentLevelBudget = levels[prev.currentLevel]?.budget ?? prev.budget
+      const isExitingZen = prev.zenMode
+      
+      return { 
+        ...prev, 
+        zenMode: !prev.zenMode,
+        budget: isExitingZen ? currentLevelBudget : Infinity 
+      }
+    })
   }
 
   const handleNextLevel = () => {
@@ -62,6 +65,58 @@ function App() {
     }
   }
 
+  const handleSpendBudget = (cost: number) => {
+    setGameState(prev => {
+      if (prev.zenMode) return prev
+      return {
+        ...prev,
+        budget: Math.max(0, prev.budget - cost)
+      }
+    })
+  }
+
+  const handleResetBudget = () => {
+    setGameState(prev => {
+      if (prev.zenMode) return prev
+      const currentLevelBudget = levels[prev.currentLevel]?.budget
+      if (typeof currentLevelBudget !== 'number') return prev
+      return {
+        ...prev,
+        budget: currentLevelBudget
+      }
+    })
+  }
+
+  const handleRefundBudget = (amount: number) => {
+    setGameState(prev => {
+      if (prev.zenMode) return prev
+      const currentLevelBudget = levels[prev.currentLevel]?.budget
+      if (typeof currentLevelBudget !== 'number') {
+        return {
+          ...prev,
+          budget: prev.budget + amount
+        }
+      }
+
+      return {
+        ...prev,
+        budget: Math.min(currentLevelBudget, prev.budget + amount)
+      }
+    })
+  }
+
+  const handleRestoreBudget = (amount: number) => {
+    setGameState(prev => {
+      if (prev.zenMode) return prev
+      const currentLevelBudget = levels[prev.currentLevel]?.budget
+      if (typeof currentLevelBudget !== 'number') return prev
+      return {
+        ...prev,
+        budget: Math.min(currentLevelBudget, amount)
+      }
+    })
+  }
+
   const handleCloseTutorial = () => {
     setGameState(prev => ({ ...prev, showTutorial: false }))
   }
@@ -72,15 +127,19 @@ function App() {
         <TutorialOverlay onClose={handleCloseTutorial} onStartGame={handleStartGame} />
       )}
       
-      <div className="flex h-screen">
-        <div className="flex-1 relative">
+      <div className="flex flex-col lg:flex-row h-screen">
+        <div className="order-2 lg:order-1 flex-1 relative h-[60vh] lg:h-auto">
           <GameCanvas 
             gameState={gameState}
             levels={levels}
+            onSpendBudget={handleSpendBudget}
+            onResetBudget={handleResetBudget}
+            onRefundBudget={handleRefundBudget}
+            onRestoreBudget={handleRestoreBudget}
           />
         </div>
         
-        <div className="w-80 bg-white border-l border-stone-200 p-6 overflow-y-auto">
+        <div className="order-1 lg:order-2 w-full lg:w-80 xl:w-96 2xl:w-[420px] bg-white border-t lg:border-t-0 lg:border-l border-stone-200 p-4 lg:p-6 overflow-y-auto">
           <GameUI 
             gameState={gameState}
             levels={levels}

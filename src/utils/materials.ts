@@ -42,7 +42,11 @@ export const getStressColor = (stress: number, maxStress: number): string => {
   return '#DC2626' // dark red - critical stress
 }
 
+const PIXELS_PER_METER = 50
+
 export const calculateBeamCost = (length: number, material: MaterialType): number => {
   const materialData = MATERIALS[material]
-  return Math.ceil(length * materialData.cost)
+  const normalizedLength = length / PIXELS_PER_METER
+  const cost = Math.ceil(normalizedLength * materialData.cost)
+  return Math.max(1, cost)
 }

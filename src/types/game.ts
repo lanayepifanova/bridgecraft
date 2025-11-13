@@ -28,6 +28,7 @@ export interface Beam {
   startNodeId: string
   endNodeId: string
   material: MaterialType
+  length: number
   stress: number
   maxStress: number
 }
@@ -52,11 +53,14 @@ export interface Level {
     width: number
     depth: number
   }
+  background?: {
+    sky: string
+    ground: string
+  }
 }
 
 export interface GameState {
   currentLevel: number
-  isPlaying: boolean
   isPaused: boolean
   showTutorial: boolean
   selectedMaterial: MaterialType

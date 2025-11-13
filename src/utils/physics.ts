@@ -6,6 +6,7 @@ export class PhysicsEngine {
   private engine: Matter.Engine
   private world: Matter.World
   private render: Matter.Render
+  private runner: Matter.Runner
   private nodes: Map<string, Matter.Body>
   private beams: Map<string, Matter.Constraint>
 
@@ -27,26 +28,37 @@ export class PhysicsEngine {
       }
     })
 
+    this.runner = Matter.Runner.create()
     this.nodes = new Map()
     this.beams = new Map()
   }
 
   initialize(nodes: Node[]): void {
-    // Create static anchor nodes
     nodes.forEach(node => {
-      if (node.isAnchor || node.isFixed) {
-        const body = Matter.Bodies.circle(node.x, node.y, 8, {
-          isStatic: true,
-          render: {
-            fillStyle: node.isAnchor ? '#EF4444' : '#6B7280'
-          }
-        })
-        Matter.World.add(this.world, body)
-        this.nodes.set(node.id, body)
-      }
+      this.addNode(node)
     })
 
     Matter.Render.run(this.render)
+    Matter.Runner.run(this.runner, this.engine)
+    this.engine.enabled = false
+  }
+
+  addNode(node: Node): void {
+    if (this.nodes.has(node.id)) return
+
+    const isStatic = Boolean(node.isAnchor || node.isFixed)
+    const fillStyle = node.isAnchor ? '#EF4444' : (isStatic ? '#6B7280' : '#9CA3AF')
+    const radius = isStatic ? 8 : 6
+
+    const body = Matter.Bodies.circle(node.x, node.y, radius, {
+      isStatic,
+      render: {
+        fillStyle
+      }
+    })
+
+    Matter.World.add(this.world, body)
+    this.nodes.set(node.id, body)
   }
 
   addBeam(beam: Beam, startNode: Node, endNode: Node): void {
@@ -55,21 +67,8 @@ export class PhysicsEngine {
     
     if (!startBody || !endBody) {
       // Create bodies for non-anchor nodes
-      const newStartBody = Matter.Bodies.circle(startNode.x, startNode.y, 6, {
-        render: {
-          fillStyle: '#9CA3AF'
-        }
-      })
-      
-      const newEndBody = Matter.Bodies.circle(endNode.x, endNode.y, 6, {
-        render: {
-          fillStyle: '#9CA3AF'
-        }
-      })
-
-      Matter.World.add(this.world, [newStartBody, newEndBody])
-      this.nodes.set(startNode.id, newStartBody)
-      this.nodes.set(endNode.id, newEndBody)
+      this.addNode(startNode)
+      this.addNode(endNode)
     }
 
     const material = MATERIALS[beam.material]
@@ -109,7 +108,7 @@ export class PhysicsEngine {
   }
 
   startSimulation(): void {
-    Matter.Engine.run(this.engine)
+    this.engine.enabled = true
   }
 
   pauseSimulation(): void {

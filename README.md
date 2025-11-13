@@ -9,7 +9,6 @@ A minimalist physics-based bridge-building simulator where players design and te
 - **Stress Analysis**: Visual stress indicators showing tension and compression
 - **Level Progression**: 5 increasingly challenging levels
 - **Zen Mode**: Unlimited building without budget constraints
-- **Ambient Audio**: Wind and river sounds for immersive experience
 - **Educational**: Learn about structural engineering principles
 
 ## Tech Stack
@@ -17,7 +16,6 @@ A minimalist physics-based bridge-building simulator where players design and te
 - **Frontend**: React + TypeScript + Vite
 - **Physics**: Matter.js for realistic bridge simulation
 - **Styling**: TailwindCSS with custom design system
-- **Audio**: Howler.js for ambient sound management
 - **Build**: Vite for fast development and optimized builds
 
 ## Getting Started

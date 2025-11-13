@@ -1,9 +1,15 @@
 import { Node, Beam, Vehicle } from '../types/game'
 
+export interface BridgeIssue {
+  message: string
+  nodeIds?: string[]
+  beamIds?: string[]
+}
+
 export interface BridgeValidation {
   isValid: boolean
-  errors: string[]
-  warnings: string[]
+  errors: BridgeIssue[]
+  warnings: BridgeIssue[]
 }
 
 export const validateBridge = (nodes: Node[], beams: Beam[], vehicles: Vehicle[]): BridgeValidation => {
@@ -16,7 +22,10 @@ export const validateBridge = (nodes: Node[], beams: Beam[], vehicles: Vehicle[]
   // Check if there are any beams
   if (beams.length === 0) {
     validation.isValid = false
-    validation.errors.push('No beams created. Build at least one beam to form a bridge.')
+    validation.errors.push({
+      message: 'No beams created. Build at least one beam to form a bridge.',
+      nodeIds: nodes.filter(node => node.isAnchor).map(node => node.id)
+    })
   }
 
   // Check if bridge connects anchor points
@@ -27,14 +36,20 @@ export const validateBridge = (nodes: Node[], beams: Beam[], vehicles: Vehicle[]
     
     const isConnected = checkPathConnection(beams, startAnchor.id, endAnchor.id)
     if (!isConnected) {
-      validation.warnings.push('Bridge may not connect both anchor points. Vehicles might not be able to cross.')
+      validation.warnings.push({
+        message: 'Connect both anchor points so vehicles can cross.',
+        nodeIds: [startAnchor.id, endAnchor.id]
+      })
     }
   }
 
   // Check for overly stressed beams
   const criticalBeams = beams.filter(beam => beam.stress > beam.maxStress * 0.9)
   if (criticalBeams.length > 0) {
-    validation.warnings.push(`${criticalBeams.length} beams are under high stress and may fail.`)
+    validation.warnings.push({
+      message: `${criticalBeams.length} beams are under high stress and may fail.`,
+      beamIds: criticalBeams.map(beam => beam.id)
+    })
   }
 
   // Check for unsupported nodes
@@ -49,11 +64,16 @@ export const validateBridge = (nodes: Node[], beams: Beam[], vehicles: Vehicle[]
   )
 
   if (unsupportedNodes.length > 0) {
-    validation.warnings.push(`${unsupportedNodes.length} nodes are not connected to any beams.`)
+    validation.warnings.push({
+      message: `${unsupportedNodes.length} nodes are not connected to any beams.`,
+      nodeIds: unsupportedNodes.map(node => node.id)
+    })
   }
 
   if (vehicles.length === 0) {
-    validation.warnings.push('No vehicles configured for this level.')
+    validation.warnings.push({
+      message: 'No vehicles configured for this level.'
+    })
   }
 
   return validation

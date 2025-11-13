@@ -17,6 +17,10 @@ export const initializeLevels = (): Level[] => {
       river: {
         width: 200,
         depth: 50
+      },
+      background: {
+        sky: '#fdf6ec',
+        ground: '#d6c0a6'
       }
     },
     {
@@ -37,6 +41,10 @@ export const initializeLevels = (): Level[] => {
       river: {
         width: 400,
         depth: 80
+      },
+      background: {
+        sky: '#ecf4ff',
+        ground: '#c8d4e3'
       }
     },
     {
@@ -56,6 +64,10 @@ export const initializeLevels = (): Level[] => {
       river: {
         width: 600,
         depth: 150
+      },
+      background: {
+        sky: '#f3f0ff',
+        ground: '#c9c2e0'
       }
     },
     {
@@ -77,6 +89,10 @@ export const initializeLevels = (): Level[] => {
       river: {
         width: 700,
         depth: 200
+      },
+      background: {
+        sky: '#eefaf7',
+        ground: '#c0e0d7'
       }
     },
     {
@@ -99,6 +115,10 @@ export const initializeLevels = (): Level[] => {
       river: {
         width: 800,
         depth: 300
+      },
+      background: {
+        sky: '#f1f5ff',
+        ground: '#d9e4f2'
       }
     }
   ]
